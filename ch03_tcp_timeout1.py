@@ -39,7 +39,10 @@ def client(host, port):
     sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
     sock.connect((host, port))
     while True:
-        msg = input("> ")
+        try:
+            msg = input("> ")
+        except EOFError:
+            break
         if msg == '': break
         data = bytes("[{}] {}".format(name, msg), 'UTF-8')
         sock.send(data)
