@@ -1,11 +1,10 @@
+
 #!/usr/bin/env python3
 # Foundations of Python Network Programming, Third Edition
 # http://ipv6.ncnu.org/Course/PythonNetworkProgramming/Code/ch03_tcp_sixteen.py
 # Simple TCP client and server that send and receive 16 octets
 
 import argparse, socket
-
-MAXBUF = 65535
 
 def recvall(sock, length):
     data = b''
@@ -19,48 +18,30 @@ def recvall(sock, length):
     return data
 
 def server(interface, port):
-    listeningSock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+    listeningSock = socket.socket(socket.AF_INET6, socket.SOCK_STREAM)
     listeningSock.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
     listeningSock.bind((interface, port))
     listeningSock.listen(1)
     print('Listening at', listeningSock.getsockname())
-    sock1, sockname = listeningSock.accept()
-    sock2, sockname = listeningSock.accept()
-    delay = 1.0
-    sock1.settimeout(delay)
-    sock2.settimeout(delay)
-    
     while True:
-        try:
-            try:
-                data = sock1.recv(MAXBUF)
-                if data == b'': break
-                print(data.decode())
-            except socket.timeout as e:
-                pass
-            try:
-                data = sock2.recv(MAXBUF)
-                if data == b'': break
-                print(data.decode())
-            except socket.timeout as e:
-                pass
-        except EOFError:
-            break
-    sock1.close()
-    sock2.close()
+        print('Waiting to accept a new connection')
+        sock, sockname = listeningSock.accept()
+        print('We have accepted a connection from', sockname)
+        print('  Socket name:', sock.getsockname())
+        print('  Socket peer:', sock.getpeername())
+        message = recvall(sock, 16)
+        print('  Incoming sixteen-octet message:', repr(message))
+        sock.sendall(b'Farewell, client')
+        sock.close()
+        print('  Reply sent, socket closed')
 
 def client(host, port):
-    name = input("Your name? ")
-    sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+    sock = socket.socket(socket.AF_INET6, socket.SOCK_STREAM)
     sock.connect((host, port))
-    while True:
-        try:
-            msg = input("> ")
-        except EOFError:
-            break
-        if msg == '': break
-        data = bytes("[{}] {}".format(name, msg), 'UTF-8')
-        sock.send(data)
+    print('Client has been assigned socket name', sock.getsockname())
+    sock.sendall(b'Hi there, server')
+    reply = recvall(sock, 16)
+    print('The server said', repr(reply))
     sock.close()
 
 if __name__ == '__main__':
