@@ -11,7 +11,7 @@ def manager():
     print(threading.current_thread().getName(), 'Exiting')
 
 s = threading.Thread(name='Manager', target=manager)
-c = threading.Thread(name='worker', target=worker)
+c = threading.Thread(name='Worker', target=worker)
 c2 = threading.Thread(target=worker)  # use default name
 
 c.start()

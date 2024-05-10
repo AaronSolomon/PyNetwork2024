@@ -13,7 +13,7 @@ logging.basicConfig(
     level=logging.DEBUG,
     format='[%(levelname)s] (%(threadName)-10s) %(message)s', )
 
-d = threading.Thread(name='daemon', target=daemon, daemon=True)
+d = threading.Thread(name='daemon', target=daemon, daemon=False)
 n = threading.Thread(name='non-daemon', target=non_daemon)
 
 d.start()

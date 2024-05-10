@@ -1,4 +1,4 @@
-import threading, logging, random, time
+import threading, logging, time
 
 logging.basicConfig(
     level=logging.INFO,
@@ -6,11 +6,11 @@ logging.basicConfig(
 )
 
 def worker():
-    i = random.randint(2, 10)
-    logging.info(f"Waiting {i} seconds")
-    time.sleep(i)
-    b.wait()
-    logging.info("Exiting")
+    n = b.wait()
+    logging.info("Still {} threads haven't passed the barrier.".format(n))
+    if n == 0:
+        time.sleep(0.1)
+        logging.info("I am the last one.")
 
 b = threading.Barrier(5)
 for i in range(5):
