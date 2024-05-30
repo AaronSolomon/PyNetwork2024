@@ -1,9 +1,0 @@
-import threading
-
-def worker(num):
-    """thread worker function"""
-    print('Worker: %s' % num)
-
-for i in range(5):
-    t = threading.Thread(target=worker, args=(i,))
-    t.start()
